@@ -75,10 +75,11 @@ public class MyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        String category = getIntent().getStringExtra("category_name");
         mListView = (ListView) this.findViewById(R.id.cloudapps);
 
-        final HttpGet httpRequest = new HttpGet(Global.ALL_APP_URL);
-        HttpParams params = new BasicHttpParams();
+        final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/format/json");
         final HttpClient httpclient = new DefaultHttpClient();
         Thread getThread = new Thread() {
             @Override

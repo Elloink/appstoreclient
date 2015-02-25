@@ -1,0 +1,24 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MyActivity">
+
+    <ListView
+        android:id="@+id/all_category"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:horizontalSpacing="10px"
+        android:verticalSpacing="10px"
+        android:layout_marginTop="28px"
+        android:layout_marginBottom="58px"
+        android:layout_marginLeft="5px"
+        android:layout_marginRight="5px"
+        >
+    </ListView>
+
+</RelativeLayout>
