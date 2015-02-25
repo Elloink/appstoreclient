@@ -158,7 +158,7 @@ public class MyActivity extends Activity {
                 public void run() {
                     super.run();
                     try {
-                        URL uri = new URL(appInfos.get(position).getPhotoUrl());
+                        URL uri = new URL(appInfos.get(position).getIconUrl());
                         final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
                         iv.post(new Runnable() {
                             @Override

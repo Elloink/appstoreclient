@@ -69,7 +69,7 @@
                         android:scaleType="fitCenter" />
 
                     <TextView
-                        android:id="@+id/detail"
+                        android:id="@+id/summary"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textSize="12.0sp" />

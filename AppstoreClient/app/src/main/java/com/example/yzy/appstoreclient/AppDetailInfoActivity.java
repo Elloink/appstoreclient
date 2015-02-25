@@ -31,6 +31,7 @@ import java.net.URL;
 public class AppDetailInfoActivity extends Activity{
     private static final String TAG = "AppDetailInfoActivity";
     TextView tvAppName = null;
+    TextView tvAppSummary = null;
     ImageView iconImage = null;
     ImageView photoImage = null;
     AppInfo mAppInfo;
@@ -64,6 +65,8 @@ public class AppDetailInfoActivity extends Activity{
             }
         });
 
+        tvAppSummary = (TextView) findViewById(R.id.summary);
+        tvAppSummary.setText(mAppInfo.getSummary());
 
         iconImage = (ImageView) findViewById(R.id.appicon);
         Thread t = new Thread(){
