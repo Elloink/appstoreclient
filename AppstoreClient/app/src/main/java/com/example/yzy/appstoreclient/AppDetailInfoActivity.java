@@ -73,7 +73,6 @@ public class AppDetailInfoActivity extends Activity{
                 try {
                     URL uri = new URL(mAppInfo.getIconUrl());
 
-                    Log.d("yzy","mAppInfo.getIconUrl()="+mAppInfo.getIconUrl());
                     final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
                     iconImage.post(new Runnable() {
                         @Override

@@ -1,5 +1,8 @@
 package com.example.yzy.appstoreclient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /**
@@ -67,5 +70,19 @@ public class AppInfo implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static AppInfo initFromJSON(JSONObject app){
+        AppInfo info  = new AppInfo();
+        try {
+            info.setName(app.getString(AppInfo.NAME));
+            info.setSummary(app.getString(AppInfo.SUMMARY));
+            info.setApkUrl(app.getString(AppInfo.URL));
+            info.setPhotoUrl(app.getString(AppInfo.PHOTO));
+            info.setIconUrl(app.getString(AppInfo.ICON));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  info;
     }
 }

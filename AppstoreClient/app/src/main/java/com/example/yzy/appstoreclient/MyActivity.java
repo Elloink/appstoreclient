@@ -76,31 +76,23 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         mListView = (ListView) this.findViewById(R.id.cloudapps);
-        String httpurl = "http://51appstore.duapp.com/index.php/api/example/users/format/json";
 
-        final HttpGet httpRequest = new HttpGet(httpurl);
+        final HttpGet httpRequest = new HttpGet(Global.ALL_APP_URL);
         HttpParams params = new BasicHttpParams();
         final HttpClient httpclient = new DefaultHttpClient();
         Thread getThread = new Thread() {
             @Override
             public void run() {
                 try {
-                    //执行Get请求，返回结果在httpResponse中
                     HttpResponse httpResponse = httpclient.execute(httpRequest);
                     if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                         final String resultData = EntityUtils.toString(httpResponse.getEntity());
 
-                        if (resultData != ""){
+                        if (!resultData.isEmpty()){
                             JSONArray allappsArray = new JSONArray(resultData);
-                            for(int i = 0;i<allappsArray.length();i++){
+                            for(int i = 0;i < allappsArray.length(); i++){
                                 JSONObject app = (JSONObject)allappsArray.get(i);
-                                AppInfo info  = new AppInfo();
-                                info.setName(app.getString(AppInfo.NAME));
-                                info.setSummary(app.getString(AppInfo.SUMMARY));
-                                info.setApkUrl(app.getString(AppInfo.URL));
-                                info.setPhotoUrl(app.getString(AppInfo.PHOTO));
-                                info.setIconUrl(app.getString(AppInfo.ICON));
-                                mAllApps.add(info);
+                                mAllApps.add(AppInfo.initFromJSON(app));
                             }
                             mListView.post(new Runnable() {
                                 @Override
@@ -114,16 +106,8 @@ public class MyActivity extends Activity {
                         httpRequest.abort();
                         interrupted();
                     }
-                } catch (ClientProtocolException e) {
-                    Log.e(TAG, "ClientProtocolException");
-                    httpRequest.abort();
-                    interrupted();
-                } catch (IOException e) {
-                    Log.e(TAG, "IOException");
-                    httpRequest.abort();
-                    interrupted();
                 } catch (Exception e) {
-                    Log.e(TAG, "Exception"+e.toString());
+                    Log.e(TAG, "Exception "+e);
                     httpRequest.abort();
                     interrupted();
                 } finally {
