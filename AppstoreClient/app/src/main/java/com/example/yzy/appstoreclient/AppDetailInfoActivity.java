@@ -3,6 +3,8 @@ package com.example.yzy.appstoreclient;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,8 @@ import java.net.URL;
 public class AppDetailInfoActivity extends Activity{
     private static final String TAG = "AppDetailInfoActivity";
     TextView tvAppName = null;
+    ImageView iconImage = null;
+    ImageView photoImage = null;
     AppInfo mAppInfo;
     ProgressDialog dialog = null;
     Button btnInstall = null;
@@ -48,6 +53,7 @@ public class AppDetailInfoActivity extends Activity{
         tvAppName.setText(mAppInfo.getName());
 
 
+
         btnInstall = (Button) findViewById(R.id.btnInstall);
         btnInstall.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +63,54 @@ public class AppDetailInfoActivity extends Activity{
                         "Loading. Please wait...", true);
             }
         });
+
+
+        iconImage = (ImageView) findViewById(R.id.appicon);
+        Thread t = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    URL uri = new URL(mAppInfo.getIconUrl());
+
+                    Log.d("yzy","mAppInfo.getIconUrl()="+mAppInfo.getIconUrl());
+                    final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
+                    iconImage.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            iconImage.setImageBitmap(bitmap);
+
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        t.start();
+        photoImage = (ImageView) findViewById(R.id.appphoto);
+        Thread t2 = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    URL uri = new URL(mAppInfo.getPhotoUrl());
+                    final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
+                    photoImage.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            photoImage.setImageBitmap(bitmap);
+
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        t2.start();
     }
 
     private Handler myHandler = new Handler() {

@@ -99,6 +99,7 @@ public class MyActivity extends Activity {
                                 info.setSummary(app.getString(AppInfo.SUMMARY));
                                 info.setApkUrl(app.getString(AppInfo.URL));
                                 info.setPhotoUrl(app.getString(AppInfo.PHOTO));
+                                info.setIconUrl(app.getString(AppInfo.ICON));
                                 mAllApps.add(info);
                             }
                             mListView.post(new Runnable() {

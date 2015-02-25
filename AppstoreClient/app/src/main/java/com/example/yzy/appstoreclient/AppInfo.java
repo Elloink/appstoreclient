@@ -10,6 +10,7 @@ public class AppInfo implements Serializable {
     public static final String PHOTO = "photo";
     public static final String SUMMARY = "summary";
     public static final String URL = "url";
+    public static final String ICON = "icon";
     private String name;
     private String summary;
 
