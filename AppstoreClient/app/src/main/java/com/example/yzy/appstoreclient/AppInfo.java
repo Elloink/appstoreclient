@@ -1,9 +1,11 @@
 package com.example.yzy.appstoreclient;
 
+import java.io.Serializable;
+
 /**
  * Created by yzy on 15-2-17.
  */
-public class AppInfo {
+public class AppInfo implements Serializable {
     public static final String NAME = "name";
     public static final String PHOTO = "photo";
     public static final String SUMMARY = "summary";
@@ -14,6 +16,25 @@ public class AppInfo {
     private String photoUrl;
     private String apkUrl;
 
+
+    private String iconUrl;
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
 
     public String getPhotoUrl() {
         return photoUrl;
