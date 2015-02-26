@@ -70,14 +70,21 @@ public class MyActivity extends Activity {
 
     private static final String TAG = "MyActivity";
     private ArrayList<AppInfo> mAllApps = new ArrayList<AppInfo>();
-    private ListView mListView = null;
+    private MyListView mListView = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
         String category = getIntent().getStringExtra("category_name");
-        mListView = (ListView) this.findViewById(R.id.cloudapps);
+        mListView = (MyListView) this.findViewById(R.id.cloudapps);
+
+        mListView.setCallBack(new MyListView.CallBackInterface() {
+            @Override
+            public void execute() {
+                Log.d("yzy","execute..............");
+            }
+        });
 
         final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/format/json");
         final HttpClient httpclient = new DefaultHttpClient();
