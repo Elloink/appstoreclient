@@ -2,6 +2,8 @@ package com.example.yzy.appstoreclient;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import java.io.BufferedReader;
@@ -70,6 +72,7 @@ public class MyActivity extends Activity {
 
     private static final String TAG = "MyActivity";
     private ArrayList<AppInfo> mAllApps = new ArrayList<AppInfo>();
+    private ListViewAdapter  mListViewAdapter = null;
     private MyListView mListView = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,25 +84,35 @@ public class MyActivity extends Activity {
 
         mListView.setCallBack(new MyListView.CallBackInterface() {
             @Override
-            public void execute() {
-                Log.d("yzy","execute..............");
+            public boolean loadNextPageData(int page) {
+                ArrayList<AppInfo> moreApps = AppInfo.getAppsByCategoryName(category,page);
+                Log.d("yzy","moreApps..."+moreApps.size());
+                if (moreApps.size() > 0) {
+                    mAllApps.addAll(moreApps);
+                    return  true;
+                } else {
+                    return false;
+                }
+
             }
         });
 
         Thread getThread = new Thread() {
             @Override
             public void run() {
-                mAllApps = AppInfo.getAppsByCategoryName(category);
+                mAllApps = AppInfo.getAppsByCategoryName(category,1);
+                mListViewAdapter = new ListViewAdapter(MyActivity.this , mAllApps);
                 mListView.post(new Runnable() {
                     @Override
                     public void run() {
-                        mListView.setAdapter(new ListViewAdapter(MyActivity.this , mAllApps));
+                        mListView.setAdapter(mListViewAdapter);
                     }
                 });
             }
         };
         getThread.start();
     }
+
 
     class ListViewAdapter extends BaseAdapter {
 

@@ -96,9 +96,10 @@ public class AppInfo implements Serializable {
         return  info;
     }
 
-    public static ArrayList<AppInfo> getAppsByCategoryName(String category){
+    //http://51appstore.duapp.com/index.php/api/example/apps/catename/IM/page/2/format/json
+    public static ArrayList<AppInfo> getAppsByCategoryName(String category,int page){
         ArrayList<AppInfo> allApps = new  ArrayList<AppInfo>();
-        final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/format/json");
+        final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/page/"+page+"/format/json");
         final HttpClient httpclient = new DefaultHttpClient();
         try {
             HttpResponse httpResponse = httpclient.execute(httpRequest);
