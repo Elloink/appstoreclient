@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -141,32 +142,56 @@ public class MyActivity extends Activity {
 
         @Override
         public View getView(final  int position, View convertView, ViewGroup parent) {
-            //to do:convertView  holder 避免多次findViewByI
+            //to do:
+            // 1.convertView
+            // 2.holder避免多次findViewById
+            //3.内存缓存bitmap
+            final AppInfo info = appInfos.get(position);
             View view = inflater.inflate(R.layout.gv_item, null);
             final TextView tv = (TextView) view.findViewById(R.id.gv_item_appname);
             final ImageView iv = (ImageView) view.findViewById(R.id.gv_item_icon);
-            tv.setText(appInfos.get(position).getName());
-            Thread t = new Thread(){
-                @Override
-                public void run() {
-                    super.run();
-                    try {
-                        URL uri = new URL(appInfos.get(position).getIconUrl());
-                        final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
-                        iv.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                iv.setImageBitmap(bitmap);
+            tv.setText(info.getName());
+            if (info.getAppIcon() != null ) {
+                //小白：不要把这个非网络请求的操作也用view.post(Runnable)去做，直接主线程完成
+                iv.setImageBitmap(BitmapFactory.decodeByteArray(info.getAppIcon(), 0,info.getAppIcon().length));
+            } else {
+                Thread t = new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
 
+                        try {
+                            if (info.getAppIcon() == null && !info.getIconUrl().isEmpty()) {
+                                URL uri = new URL(info.getIconUrl());
+                                //把Bitmap转换成byte[ ]
+                                final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
+                                //实例化字节数组输出流
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 0, baos);//压缩位图
+                                info.setAppIcon(baos.toByteArray());
+                                Log.d("yzy","decode "+info.getName());
+                                //   info.setAppIcon(bitmap);
                             }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
-                }
-            };
-            t.start();
+                            if (!info.getIconUrl().isEmpty()) {
+                                iv.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iv.setImageBitmap(BitmapFactory.decodeByteArray(info.getAppIcon(), 0,info.getAppIcon().length));
+
+                                    }
+                                });
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                };
+                t.start();
+            }
+
 
             Button btnDetail = (Button) view.findViewById(R.id.btnDetail);
             btnDetail.setOnClickListener(new View.OnClickListener() {

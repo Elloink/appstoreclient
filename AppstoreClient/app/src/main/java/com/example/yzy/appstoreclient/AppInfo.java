@@ -1,5 +1,6 @@
 package com.example.yzy.appstoreclient;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -33,6 +34,17 @@ public class AppInfo implements Serializable {
 
     private String iconUrl;
     private String categoryName;
+
+    //Bitamp不能Serializable，所以用byte数组实现
+    private byte[] appIcon;
+
+    public byte[] getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(byte[] appIcon) {
+        this.appIcon = appIcon;
+    }
 
     public String getCategoryName() {
         return categoryName;

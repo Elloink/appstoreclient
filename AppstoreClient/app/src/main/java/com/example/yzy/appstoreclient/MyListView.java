@@ -73,7 +73,7 @@ public class MyListView extends ListView {
 
                 int dataCount = getAdapter().getCount();
 
-                Log.d("yzy","scrollState="+scrollState+" dataCount="+dataCount +" mCurPage="+mCurPage +" mLastItemIndex="+mLastItemIndex);
+              //  Log.d("yzy","scrollState="+scrollState+" dataCount="+dataCount +" mCurPage="+mCurPage +" mLastItemIndex="+mLastItemIndex);
                 //当滚动停止且滚动的总数等于数据的总数，去加载
 
                 if (scrollState == SCROLL_STATE_IDLE && mLastItemIndex == dataCount-1) {
