@@ -31,48 +31,22 @@ public class CategoryActivity  extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_list);
         mListView = (ListView) findViewById(R.id.all_category);
-        final HttpGet httpRequest = new HttpGet(Global.ALL_CATEGORY_URL);
-        final HttpClient httpclient = new DefaultHttpClient();
+
         Thread getThread = new Thread() {
             @Override
             public void run() {
-                try {
-                    HttpResponse httpResponse = httpclient.execute(httpRequest);
-                    if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                        final String resultData = EntityUtils.toString(httpResponse.getEntity());
 
-                        if (!resultData.isEmpty()){
-                            JSONArray allcategoryArray = new JSONArray(resultData);
-                            for(int i = 0;i < allcategoryArray.length(); i++){
-                                JSONObject app = (JSONObject)allcategoryArray.get(i);
-                                mAllCategory.add(CategoryInfo.initFromJSON(app));
-                            }
-                            mListView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(CategoryActivity.this, android.R.layout.simple_expandable_list_item_1);
-                                    for (CategoryInfo info : mAllCategory){
-                                        adapter.add(info.getNameCH());
-                                    }
-                                    mListView.setAdapter(adapter);
-                                }
-                            });
-
+                mAllCategory = CategoryInfo.getAllCategory();
+                mListView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(CategoryActivity.this, android.R.layout.simple_expandable_list_item_1);
+                        for (CategoryInfo info : mAllCategory){
+                            adapter.add(info.getNameCH());
                         }
-                    } else {
-                        httpResponse = null;
-                        httpRequest.abort();
-                        interrupted();
+                        mListView.setAdapter(adapter);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    httpRequest.abort();
-                    interrupted();
-                } finally {
-                    if (httpclient != null) {
-                        httpclient.getConnectionManager().shutdown();
-                    }
-                }
+                });
             }
         };
         getThread.start();

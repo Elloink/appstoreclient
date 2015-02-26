@@ -1,9 +1,19 @@
 package com.example.yzy.appstoreclient;
 
+import android.util.Log;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by yzy on 15-2-17.
@@ -85,4 +95,35 @@ public class AppInfo implements Serializable {
         }
         return  info;
     }
+
+    public static ArrayList<AppInfo> getAppsByCategoryName(String category){
+        ArrayList<AppInfo> allApps = new  ArrayList<AppInfo>();
+        final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/format/json");
+        final HttpClient httpclient = new DefaultHttpClient();
+        try {
+            HttpResponse httpResponse = httpclient.execute(httpRequest);
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                final String resultData = EntityUtils.toString(httpResponse.getEntity());
+
+                if (!resultData.isEmpty()){
+                    JSONArray allappsArray = new JSONArray(resultData);
+                    for(int i = 0;i < allappsArray.length(); i++){
+                        JSONObject app = (JSONObject)allappsArray.get(i);
+                        allApps.add(AppInfo.initFromJSON(app));
+                    }
+                }
+            } else {
+                httpResponse = null;
+                httpRequest.abort();
+            }
+        } catch (Exception e) {
+            httpRequest.abort();
+        } finally {
+            if (httpclient != null) {
+                httpclient.getConnectionManager().shutdown();
+            }
+        }
+        return allApps;
+    }
+
 }

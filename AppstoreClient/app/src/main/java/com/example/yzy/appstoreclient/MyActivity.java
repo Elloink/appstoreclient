@@ -76,7 +76,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        String category = getIntent().getStringExtra("category_name");
+        final String category = getIntent().getStringExtra("category_name");
         mListView = (MyListView) this.findViewById(R.id.cloudapps);
 
         mListView.setCallBack(new MyListView.CallBackInterface() {
@@ -86,43 +86,16 @@ public class MyActivity extends Activity {
             }
         });
 
-        final HttpGet httpRequest = new HttpGet(Global.APPS_IN_ONE_CATEGORY_URL+category+"/format/json");
-        final HttpClient httpclient = new DefaultHttpClient();
         Thread getThread = new Thread() {
             @Override
             public void run() {
-                try {
-                    HttpResponse httpResponse = httpclient.execute(httpRequest);
-                    if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                        final String resultData = EntityUtils.toString(httpResponse.getEntity());
-
-                        if (!resultData.isEmpty()){
-                            JSONArray allappsArray = new JSONArray(resultData);
-                            for(int i = 0;i < allappsArray.length(); i++){
-                                JSONObject app = (JSONObject)allappsArray.get(i);
-                                mAllApps.add(AppInfo.initFromJSON(app));
-                            }
-                            mListView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mListView.setAdapter(new ListViewAdapter(MyActivity.this , mAllApps));
-                                }
-                            });
-                        }
-                    } else {
-                        httpResponse = null;
-                        httpRequest.abort();
-                        interrupted();
+                mAllApps = AppInfo.getAppsByCategoryName(category);
+                mListView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mListView.setAdapter(new ListViewAdapter(MyActivity.this , mAllApps));
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Exception "+e);
-                    httpRequest.abort();
-                    interrupted();
-                } finally {
-                    if (httpclient != null) {
-                        httpclient.getConnectionManager().shutdown();
-                    }
-                }
+                });
             }
         };
         getThread.start();
