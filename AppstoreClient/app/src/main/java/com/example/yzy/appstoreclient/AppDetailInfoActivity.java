@@ -69,28 +69,42 @@ public class AppDetailInfoActivity extends Activity{
         tvAppSummary.setText(mAppInfo.getSummary());
 
         iconImage = (ImageView) findViewById(R.id.appicon);
-        Thread t = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                try {
-                    URL uri = new URL(mAppInfo.getIconUrl());
 
-                    final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
-                    iconImage.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            iconImage.setImageBitmap(bitmap);
 
+
+        if(mAppInfo.getAppIcon() != null){
+            iconImage.setImageBitmap(BitmapFactory.decodeByteArray(mAppInfo.getAppIcon(), 0,mAppInfo.getAppIcon().length));
+        } else {
+
+            Thread t = new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    try {
+                        if (!mAppInfo.getIconUrl().isEmpty()) {
+                            URL uri = new URL(mAppInfo.getIconUrl());
+
+                            final Bitmap bitmap = BitmapFactory.decodeStream(uri.openStream());
+                            iconImage.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    iconImage.setImageBitmap(bitmap);
+
+                                }
+                            });
                         }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
-            }
-        };
-        t.start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            t.start();
+
+        }
+
+
         photoImage = (ImageView) findViewById(R.id.appphoto);
         Thread t2 = new Thread(){
             @Override

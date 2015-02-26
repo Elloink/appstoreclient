@@ -66,7 +66,7 @@ public class MyListView extends ListView {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                Log.d("yzy","scrollState="+scrollState);
+            //    Log.d("yzy","scrollState="+scrollState);
 
                 // 当滚动停止且滚动的总数等于数据的总数，去加载
                // mCount = mLastItemIndex - mFirstItemIndex;

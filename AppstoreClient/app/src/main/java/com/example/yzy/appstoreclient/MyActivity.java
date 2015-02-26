@@ -153,6 +153,7 @@ public class MyActivity extends Activity {
             tv.setText(info.getName());
             if (info.getAppIcon() != null ) {
                 //小白：不要把这个非网络请求的操作也用view.post(Runnable)去做，直接主线程完成
+                //因为post的Runnable并不是立即执行的，是异步的
                 iv.setImageBitmap(BitmapFactory.decodeByteArray(info.getAppIcon(), 0,info.getAppIcon().length));
             } else {
                 Thread t = new Thread(){
