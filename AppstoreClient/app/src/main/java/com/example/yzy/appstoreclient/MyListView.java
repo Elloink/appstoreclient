@@ -119,6 +119,7 @@ public class MyListView extends ListView {
             //  msg.what = 0;
             // }
             //OrderListActivity.this.myHandler.sendMessage(msg);
+            myHandler.sendMessage(msg);
 
         }
 
