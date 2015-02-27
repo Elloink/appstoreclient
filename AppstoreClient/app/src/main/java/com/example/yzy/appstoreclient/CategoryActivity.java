@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
@@ -26,11 +29,28 @@ import java.util.ArrayList;
 public class CategoryActivity  extends Activity {
     ListView mListView = null;
     ArrayList<CategoryInfo> mAllCategory = new ArrayList<CategoryInfo>();
+    EditText mEtSearchText = null;
+    ImageView mIvSearchKey = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_list);
         mListView = (ListView) findViewById(R.id.all_category);
+
+        mEtSearchText = (EditText) findViewById(R.id.et_search_key);
+        mIvSearchKey = (ImageView) findViewById(R.id.search_key);
+        mIvSearchKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mEtSearchText.getText().toString().isEmpty()) {
+
+                    Intent intent = new Intent(CategoryActivity.this,SearchResultActivity.class);
+                    intent.putExtra("search_key",mEtSearchText.getText().toString());
+                    startActivity(intent);
+                }
+
+            }
+        });
 
         Thread getThread = new Thread() {
             @Override

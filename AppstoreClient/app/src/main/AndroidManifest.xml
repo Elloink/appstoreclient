@@ -43,6 +43,11 @@
         <activity
             android:name=".AppDetailInfoActivity">
         </activity>
+        <activity
+            android:name=".SearchResultActivity">
+        </activity>
+
+
     </application>
 
 </manifest>

@@ -8,8 +8,20 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MyActivity">
 
+
+    <EditText
+        android:id="@+id/et_search_key"
+        android:layout_height="wrap_content"
+        android:layout_width="300dp" />
+    <ImageView
+        android:id="@+id/search_key"
+        android:layout_toRightOf="@id/et_search_key"
+        android:src="@drawable/ic_search_key"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
     <ListView
         android:id="@+id/all_category"
+        android:layout_below="@id/et_search_key"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:horizontalSpacing="10px"

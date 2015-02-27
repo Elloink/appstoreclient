@@ -139,4 +139,35 @@ public class AppInfo implements Serializable {
         return allApps;
     }
 
+
+    public static ArrayList<AppInfo> getAppsBySearchKey(String key){
+            ArrayList<AppInfo> allApps = new  ArrayList<AppInfo>();
+            final HttpGet httpRequest = new HttpGet(Global.APPS_KEY_SEACH_URL+key+"/format/json");
+            final HttpClient httpclient = new DefaultHttpClient();
+            try {
+                HttpResponse httpResponse = httpclient.execute(httpRequest);
+                if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    final String resultData = EntityUtils.toString(httpResponse.getEntity());
+
+                    if (!resultData.isEmpty()){
+                        JSONArray allappsArray = new JSONArray(resultData);
+                        for(int i = 0;i < allappsArray.length(); i++){
+                            JSONObject app = (JSONObject)allappsArray.get(i);
+                            allApps.add(AppInfo.initFromJSON(app));
+                        }
+                    }
+                } else {
+                    httpResponse = null;
+                    httpRequest.abort();
+                }
+            } catch (Exception e) {
+                httpRequest.abort();
+            } finally {
+                if (httpclient != null) {
+                    httpclient.getConnectionManager().shutdown();
+                }
+            }
+            return allApps;
+    }
+
 }
