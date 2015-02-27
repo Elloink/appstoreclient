@@ -2,9 +2,12 @@ package com.example.yzy.appstoreclient;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,9 +62,16 @@ public class AppDetailInfoActivity extends Activity{
         btnInstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Thread(new DownAndInstallThread()).start();
-                dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
-                        "Loading. Please wait...", true);
+                ConnectivityManager connectMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo info = connectMgr.getActiveNetworkInfo();
+                if (info != null && info.getType() == ConnectivityManager.TYPE_WIFI) {
+                    new Thread(new DownAndInstallThread()).start();
+                    dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
+                            "Loading. Please wait...", true);
+                } else {
+                    Toast.makeText(AppDetailInfoActivity.this,"请在wifi下下载应用",Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
