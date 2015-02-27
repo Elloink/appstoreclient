@@ -3,6 +3,7 @@ package com.example.yzy.appstoreclient;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -46,6 +47,7 @@ public class CategoryActivity  extends Activity {
             public void run() {
 
                 mAllCategory = CategoryInfo.getAllCategory();
+                Log.d("yzy", "mAllCategory=" + mAllCategory.size());
                 mListView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -53,12 +55,14 @@ public class CategoryActivity  extends Activity {
                         for (CategoryInfo info : mAllCategory){
                             adapter.add(info.getNameCH());
                         }
+                        Log.d("yzy","adapter set ..."+adapter.getCount());
                         mListView.setAdapter(adapter);
                     }
                 });
             }
         };
         getThread.start();
+        Log.d("yzy","getThread start");
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

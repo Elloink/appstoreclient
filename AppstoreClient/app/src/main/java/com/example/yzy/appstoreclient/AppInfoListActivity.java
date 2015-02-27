@@ -1,11 +1,14 @@
 package com.example.yzy.appstoreclient;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.ArrayList;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 
 public class AppInfoListActivity extends Activity {
 
@@ -52,6 +55,20 @@ public class AppInfoListActivity extends Activity {
             }
         };
         getThread.start();
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("yzy","llll="+i);
+                AppInfo app = mAllApps.get(i);
+                Intent intent = new Intent(AppInfoListActivity.this,AppDetailInfoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("appinfo", app);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
     }
 
 

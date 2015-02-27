@@ -110,6 +110,7 @@ class AppInfoListViewAdapter extends BaseAdapter {
                 Intent intent = new Intent(context,AppDetailInfoActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("appinfo", app);
+              //  bundle.putParcelable();
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }

@@ -20,6 +20,7 @@
 		android:lines="2" android:textSize="32px" android:textColor="#000" />
     <Button
         android:id="@+id/btnDetail"
+        android:focusable="false"
         android:layout_alignParentRight="true"
         android:layout_height="match_parent"
         android:text="@string/details"
