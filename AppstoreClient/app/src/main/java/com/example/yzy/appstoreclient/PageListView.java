@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by yangzhongyu on 15-2-26.
  */
-public class MyListView extends ListView {
+public class PageListView extends ListView {
 
     public interface CallBackInterface {
 
@@ -60,7 +60,7 @@ public class MyListView extends ListView {
 
     private CallBackInterface mCallback;
 
-    public MyListView(Context context, AttributeSet attrs) {
+    public PageListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setOnScrollListener(new OnScrollListener() {
 
@@ -150,7 +150,7 @@ public class MyListView extends ListView {
 
     };
 
-    public MyListView(Context context) {
+    public PageListView(Context context) {
         super(context);
 
     }

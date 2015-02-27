@@ -21,13 +21,13 @@ import java.util.List;
 /**
  * Created by yangzhongyu on 15-2-27.
  */
-class ListViewAdapter extends BaseAdapter {
+class AppInfoListViewAdapter extends BaseAdapter {
 
     LayoutInflater inflater;
     List<AppInfo> appInfos;
     Context context;
 
-    public ListViewAdapter(Context context, List<AppInfo> appInfos) {
+    public AppInfoListViewAdapter(Context context, List<AppInfo> appInfos) {
         inflater = LayoutInflater.from(context);
         this.appInfos = appInfos;
         this.context = context;
