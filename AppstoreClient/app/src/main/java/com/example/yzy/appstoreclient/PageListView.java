@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -106,11 +107,11 @@ public class PageListView extends ListView {
 
     }
 
-    private  AppInfoListViewAdapter mAppInfoListViewAdapter;
+    private  BaseAdapter mBaseAdapter;
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
-        mAppInfoListViewAdapter = (AppInfoListViewAdapter) adapter;
+        mBaseAdapter = (BaseAdapter) adapter;
     }
 
     // 主线程Handler负责更新UI，Handler与 Thread通过Message通信
@@ -167,12 +168,15 @@ public class PageListView extends ListView {
 
             //   ((BaseAdapter)getAdapter()).notifyDataSetChanged(); // 会出现ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to android.widget.BaseAdapter
 
-            //在ListView源代码中对于有footer header的ListView会把其做一次wrapper为HeaderViewListAdapter  mAdapter = new HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, adapter);
-            //解决办法，重写setAdpter方法，保留wrapper之前的adapter的引用
+            //原因：在ListView源代码中对于有footer header的ListView会把其做一次wrapper为HeaderViewListAdapter  mAdapter = new HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, adapter);
+            //解决办法：
+            // 1.重写setAdpter方法，保留wrapper之前的adapter的引用
+            // 2.HeaderViewListAdapter 的 getWrappedAdapter 获取包装之前的BaseAdapter对象
 
-            mAppInfoListViewAdapter.notifyDataSetChanged();
+            mBaseAdapter.notifyDataSetChanged();//解决方法一
 
-
+        //    HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter)getAdapter();
+        //    ((BaseAdapter)headerViewListAdapter.getWrappedAdapter()).notifyDataSetChanged();//解决方法2
 
         }
 
