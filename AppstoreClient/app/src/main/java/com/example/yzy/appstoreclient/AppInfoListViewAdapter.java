@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +57,13 @@ class AppInfoListViewAdapter extends BaseAdapter {
         // 2.holder避免多次findViewById
         //3.内存缓存bitmap
         final AppInfo info = appInfos.get(position);
-        View view = inflater.inflate(R.layout.gv_item, null);
+        View view = null;
+        if (convertView != null) {
+            view = convertView;
+        } else {
+            view = inflater.inflate(R.layout.gv_item, null);
+        }
+
         final TextView tv = (TextView) view.findViewById(R.id.gv_item_appname);
         final ImageView iv = (ImageView) view.findViewById(R.id.gv_item_icon);
         tv.setText(info.getName());
@@ -98,7 +106,8 @@ class AppInfoListViewAdapter extends BaseAdapter {
 
                 }
             };
-            t.start();
+            t.start();//todo：多个item调用start方法，不能保证线程的顺序执行，会导致item不是从上到下顺序一个一个显示出来，很不和谐
+                      //可以使用handlerThread创建子线程handler，通过其post方法，保证item顺序显示出来
         }
 
 

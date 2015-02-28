@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class PageListView extends ListView {
          */
         public boolean loadNextPageData(int page);
     }
-    public TextView mBottomLoadMore = null;
+    public ProgressBar mBottomLoadMoreProgressBar = null;
     private int mLastItemIndex;
     private int mCurPage = 1;
     private int mFirstItemIndex;
@@ -73,7 +74,7 @@ public class PageListView extends ListView {
 
                 int dataCount = getAdapter().getCount();
 
-              //  Log.d("yzy","scrollState="+scrollState+" dataCount="+dataCount +" mCurPage="+mCurPage +" mLastItemIndex="+mLastItemIndex);
+                Log.d("yzy","scrollState="+scrollState+" dataCount="+dataCount +" mCurPage="+mCurPage +" mLastItemIndex="+mLastItemIndex);
                 //当滚动停止且滚动的总数等于数据的总数，去加载
 
                 if (scrollState == SCROLL_STATE_IDLE && mLastItemIndex == dataCount-1) {
@@ -81,6 +82,7 @@ public class PageListView extends ListView {
 
 
                     mCurPage ++;
+                    mBottomLoadMoreProgressBar.setVisibility(View.VISIBLE);
                     new  Thread(loadMoreThread).start();
                   //  mCallback.execute();
                 }
@@ -95,6 +97,11 @@ public class PageListView extends ListView {
                 mFirstItemIndex = firstVisibleItem;
             }
         });
+
+        mBottomLoadMoreProgressBar = new ProgressBar(context);
+        mBottomLoadMoreProgressBar.setVisibility(View.INVISIBLE);
+        addFooterView(mBottomLoadMoreProgressBar);
+
     }
 
     // 主线程Handler负责更新UI，Handler与 Thread通过Message通信
@@ -132,20 +139,26 @@ public class PageListView extends ListView {
             // //执行接收到的通知，更新UI 此时执行的顺序是按照队列进行，即先进先出
             super.handleMessage(msg);
             switch (msg.what) {
-                case 1:
+              //  case 1:
                    // bottomLoadMore.setText(getResources().getString(R.string.allshow));
-                    break;
-                case 0:
-                    break;
-                case 2:
+             //       break;
+            //    case 0:
+           //         break;
+           //     case 2:
                    // Toast.makeText(OrderListActivity.this, getResources().getString(R.string.refresh_done), Toast.LENGTH_LONG).show();
                   //  topRefresh.setVisibility(View.VISIBLE);
+           //         break;
+                default:
+                    mBottomLoadMoreProgressBar.setVisibility(INVISIBLE);
                     break;
 
             }
       //      getAdapter().notifyDataSetChanged();
       //      MyListView.this.getAdapter().notify();
-            ((BaseAdapter)getAdapter()).notifyDataSetChanged();
+            if (getAdapter() instanceof  BaseAdapter) {
+                ((BaseAdapter)getAdapter()).notifyDataSetChanged();
+            }
+
         }
 
     };
