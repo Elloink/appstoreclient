@@ -24,12 +24,6 @@
         android:layout_below="@id/et_search_key"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:horizontalSpacing="10px"
-        android:verticalSpacing="10px"
-        android:layout_marginTop="28px"
-        android:layout_marginBottom="58px"
-        android:layout_marginLeft="5px"
-        android:layout_marginRight="5px"
         >
     </ListView>
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -101,7 +102,15 @@ public class PageListView extends ListView {
         mBottomLoadMoreProgressBar = new ProgressBar(context);
         mBottomLoadMoreProgressBar.setVisibility(View.INVISIBLE);
         addFooterView(mBottomLoadMoreProgressBar);
+        Log.d("yzy","add footer view");
 
+    }
+
+    private  AppInfoListViewAdapter mAppInfoListViewAdapter;
+    @Override
+    public void setAdapter(ListAdapter adapter) {
+        super.setAdapter(adapter);
+        mAppInfoListViewAdapter = (AppInfoListViewAdapter) adapter;
     }
 
     // 主线程Handler负责更新UI，Handler与 Thread通过Message通信
@@ -114,6 +123,8 @@ public class PageListView extends ListView {
             boolean isHasMorePage = mCallback.loadNextPageData(mCurPage);
             if (!isHasMorePage) {
                 mCurPage--;//mCurPage复原，因为这一页没有数据了
+            } else {
+
             }
             //ArrayList<ETOrderInfo> moreOrders = info.getVendorOrderListByDate(
             //        merchant_code, state, curPage + "");
@@ -153,11 +164,15 @@ public class PageListView extends ListView {
                     break;
 
             }
-      //      getAdapter().notifyDataSetChanged();
-      //      MyListView.this.getAdapter().notify();
-            if (getAdapter() instanceof  BaseAdapter) {
-                ((BaseAdapter)getAdapter()).notifyDataSetChanged();
-            }
+
+            //   ((BaseAdapter)getAdapter()).notifyDataSetChanged(); // 会出现ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to android.widget.BaseAdapter
+
+            //在ListView源代码中对于有footer header的ListView会把其做一次wrapper为HeaderViewListAdapter  mAdapter = new HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, adapter);
+            //解决办法，重写setAdpter方法，保留wrapper之前的adapter的引用
+
+            mAppInfoListViewAdapter.notifyDataSetChanged();
+
+
 
         }
 

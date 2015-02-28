@@ -50,6 +50,7 @@ public class AppInfoListActivity extends Activity {
                     @Override
                     public void run() {
                         mListView.setAdapter(mAppInfoListViewAdapter);
+                        Log.d("yzy","mListView.setAdapter");
                     }
                 });
             }

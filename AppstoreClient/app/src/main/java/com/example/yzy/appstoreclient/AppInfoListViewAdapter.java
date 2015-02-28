@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -108,6 +109,10 @@ class AppInfoListViewAdapter extends BaseAdapter {
             };
             t.start();//todo：多个item调用start方法，不能保证线程的顺序执行，会导致item不是从上到下顺序一个一个显示出来，很不和谐
                       //可以使用handlerThread创建子线程handler，通过其post方法，保证item顺序显示出来
+         //   HandlerThread sWorkerThread = new HandlerThread("thread");
+         //   sWorkerThread.start();
+         //   Handler handler  = new Handler(sWorkerThread.getLooper());
+         //   handler.post(t);
         }
 
 
