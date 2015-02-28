@@ -21,8 +21,10 @@
     <Button
         android:id="@+id/btnDetail"
         android:focusable="false"
+        android:background="@drawable/button_common"
         android:layout_alignParentRight="true"
         android:layout_height="match_parent"
         android:text="@string/details"
+        android:textColor="#FFF"
         android:layout_width="wrap_content" />
 </RelativeLayout>
