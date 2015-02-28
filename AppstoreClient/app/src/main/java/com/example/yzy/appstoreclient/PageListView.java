@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -34,6 +35,10 @@ public class PageListView extends ListView {
     private int mLastItemIndex;
     private int mCurPage = 1;
     private int mFirstItemIndex;
+
+    private static final int NO_MORE_DATA = 0;
+
+    private Context mContext;
 
     public int getmLastItemIndex() {
         return mLastItemIndex;
@@ -65,6 +70,8 @@ public class PageListView extends ListView {
 
     public PageListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
+
         this.setOnScrollListener(new OnScrollListener() {
 
             @Override
@@ -103,7 +110,6 @@ public class PageListView extends ListView {
         mBottomLoadMoreProgressBar = new ProgressBar(context);
         mBottomLoadMoreProgressBar.setVisibility(View.INVISIBLE);
         addFooterView(mBottomLoadMoreProgressBar);
-        Log.d("yzy","add footer view");
 
     }
 
@@ -124,20 +130,9 @@ public class PageListView extends ListView {
             boolean isHasMorePage = mCallback.loadNextPageData(mCurPage);
             if (!isHasMorePage) {
                 mCurPage--;//mCurPage复原，因为这一页没有数据了
-            } else {
+                msg.what = NO_MORE_DATA;
 
             }
-            //ArrayList<ETOrderInfo> moreOrders = info.getVendorOrderListByDate(
-            //        merchant_code, state, curPage + "");
-            //orders.addAll(moreOrders);
-            //if(moreOrders.size() ==0){
-
-            //  msg.what = 1;
-            //}else{
-
-            //  msg.what = 0;
-            // }
-            //OrderListActivity.this.myHandler.sendMessage(msg);
             myHandler.sendMessage(msg);
 
         }
@@ -151,20 +146,15 @@ public class PageListView extends ListView {
             // //执行接收到的通知，更新UI 此时执行的顺序是按照队列进行，即先进先出
             super.handleMessage(msg);
             switch (msg.what) {
-              //  case 1:
-                   // bottomLoadMore.setText(getResources().getString(R.string.allshow));
-             //       break;
-            //    case 0:
-           //         break;
-           //     case 2:
-                   // Toast.makeText(OrderListActivity.this, getResources().getString(R.string.refresh_done), Toast.LENGTH_LONG).show();
-                  //  topRefresh.setVisibility(View.VISIBLE);
-           //         break;
+                case NO_MORE_DATA:
+                    Toast.makeText(mContext, "没有了", Toast.LENGTH_LONG).show();
+                    break;
                 default:
-                    mBottomLoadMoreProgressBar.setVisibility(INVISIBLE);
+
                     break;
 
             }
+            mBottomLoadMoreProgressBar.setVisibility(INVISIBLE);
 
             //   ((BaseAdapter)getAdapter()).notifyDataSetChanged(); // 会出现ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to android.widget.BaseAdapter
 

@@ -50,7 +50,6 @@ public class AppInfoListActivity extends Activity {
                     @Override
                     public void run() {
                         mListView.setAdapter(mAppInfoListViewAdapter);
-                        Log.d("yzy","mListView.setAdapter");
                     }
                 });
             }
@@ -61,7 +60,6 @@ public class AppInfoListActivity extends Activity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("yzy","llll="+i);
                 AppInfo app = mAllApps.get(i);
                 Intent intent = new Intent(AppInfoListActivity.this,AppDetailInfoActivity.class);
                 Bundle bundle = new Bundle();
