@@ -67,7 +67,7 @@ public class AppDetailInfoActivity extends Activity{
                 if (info != null && info.getType() == ConnectivityManager.TYPE_WIFI) {
                     new Thread(new DownAndInstallThread()).start();
                     dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
-                            "Loading. Please wait...", true);
+                            "正在下载安装文件...", true);
                 } else {
                     Toast.makeText(AppDetailInfoActivity.this,"请在wifi下下载应用",Toast.LENGTH_LONG).show();
                 }
