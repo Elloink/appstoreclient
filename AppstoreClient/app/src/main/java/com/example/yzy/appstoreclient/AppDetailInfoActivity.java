@@ -1,8 +1,10 @@
 package com.example.yzy.appstoreclient;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -69,7 +71,28 @@ public class AppDetailInfoActivity extends Activity{
                     dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
                             "正在下载安装文件...", true);
                 } else {
-                    Toast.makeText(AppDetailInfoActivity.this,"请在wifi下下载应用",Toast.LENGTH_LONG).show();
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(AppDetailInfoActivity.this);
+                    AlertDialog dialog = null;
+                    //  builder.setCancelable(false);
+                    builder.setTitle("");
+                    builder.setMessage("非Wifi网络下载会消耗数据网络流量");
+
+                    builder.setPositiveButton("下载",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    new Thread(new DownAndInstallThread()).start();
+                                    dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
+                                            "正在下载安装文件...", true);
+                                }
+                            });
+
+                    builder.setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                   dialog.dismiss();
+                                }
+                            });
+                    dialog = builder.show();
                 }
 
             }
