@@ -170,7 +170,10 @@ public class AppDetailInfoActivity extends Activity{
             super.handleMessage(msg);
             switch (msg.what) {
                 case DOWNSUCCESS:
-                    dialog.dismiss();
+                    if(dialog != null){
+
+                        dialog.dismiss();
+                    }
                     Toast.makeText(AppDetailInfoActivity.this, "安装成功", Toast.LENGTH_SHORT)
                             .show();
                     break;
@@ -220,6 +223,8 @@ public class AppDetailInfoActivity extends Activity{
             URL url = new URL(httpUrl);
             try {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                int length = conn.getContentLength();
+                Log.d("yzy","文件总长度="+length);
                 InputStream is = conn.getInputStream();
                 FileOutputStream fos = new FileOutputStream(file);
                 byte[] buf = new byte[256];
