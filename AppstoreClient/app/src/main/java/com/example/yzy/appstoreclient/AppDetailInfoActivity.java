@@ -43,6 +43,8 @@ public class AppDetailInfoActivity extends Activity{
     ProgressDialog dialog = null;
     Button btnInstall = null;
     protected static final int DOWNSUCCESS = 0;// "downlaod_and_install_done";
+    DownAndInstallThread mDownAndInstallThread = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -67,9 +69,19 @@ public class AppDetailInfoActivity extends Activity{
                 ConnectivityManager connectMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo info = connectMgr.getActiveNetworkInfo();
                 if (info != null && info.getType() == ConnectivityManager.TYPE_WIFI) {
-                    new Thread(new DownAndInstallThread()).start();
-                    dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
-                            "正在下载安装文件...", true);
+                    if (mDownAndInstallThread == null) { //第一次下载，或者暂停之后下载
+                        mDownAndInstallThread = new DownAndInstallThread(mAppInfo.getApkUrl());
+                        mDownAndInstallThread.start();
+                        btnInstall.setText("暂停");
+
+                    } else {//不是空，说明是想暂停
+                        mDownAndInstallThread.interrupt();
+                        mDownAndInstallThread = null;
+                        btnInstall.setText("继续");
+                    }
+
+                    //dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
+                   //         "正在下载安装文件...", true);
                 } else {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(AppDetailInfoActivity.this);
                     AlertDialog dialog = null;
@@ -80,7 +92,7 @@ public class AppDetailInfoActivity extends Activity{
                     builder.setPositiveButton("下载",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    new Thread(new DownAndInstallThread()).start();
+                                    new DownAndInstallThread(mAppInfo.getApkUrl()).start();
                                     dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
                                             "正在下载安装文件...", true);
                                 }
@@ -181,17 +193,31 @@ public class AppDetailInfoActivity extends Activity{
         }
     };
     // 主线程Handler负责更新UI，Handler与 Thread通过Message通信
-    class DownAndInstallThread implements Runnable{
+    class DownAndInstallThread extends Thread{
+
+
+        String apkUrl;
+        public DownAndInstallThread(String apkUrl) {
+              this.apkUrl = apkUrl;
+        }
 
         @Override
         public void run() {
 
-            Log.d("yzy", "download start..."+mAppInfo.getApkUrl());
+            Log.d("yzy", "download start..."+apkUrl);
             //.http://bcs.duapp.com/yzy20120930/luck.apk 解析出luck.apk
-            File apkFile = downLoadFile(mAppInfo.getApkUrl());
+            File apkFile = null;
+            try {
+                String filePath = SuspendableDownloader.downLoadFile(apkUrl);
+                apkFile = new File(filePath);
+                Log.d("yzy","apkFile = "+apkFile);
+                openFile(apkFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Log.d("yzy", "download done...");
 
-            openFile(apkFile);
+
             Message msg = new Message();
             msg.what = DOWNSUCCESS;
             AppDetailInfoActivity.this.myHandler.sendMessage(msg);
@@ -208,54 +234,6 @@ public class AppDetailInfoActivity extends Activity{
 		intent.setDataAndType(Uri.fromFile(file),
 				"application/vnd.android.package-archive");
 		startActivity(intent);
-    }
-
-
-    public static File downLoadFile(String httpUrl) {
-        File tmpFile = new File("//sdcard");
-        if (!tmpFile.exists()) {
-            tmpFile.mkdir();
-        }
-        String fileName = httpUrl.split("/")[httpUrl.split("/").length-1];
-
-        final File file = new File("//sdcard//" + fileName);
-        try {
-            URL url = new URL(httpUrl);
-            try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                int length = conn.getContentLength();
-                Log.d("yzy","文件总长度="+length);
-                InputStream is = conn.getInputStream();
-                FileOutputStream fos = new FileOutputStream(file);
-                byte[] buf = new byte[256];
-                conn.connect();
-                double count = 0;
-                if (conn.getResponseCode() >= 400) {
-                    // Log.i("time","time exceed");
-                } else {
-                    while (count <= 100) {
-                        if (is != null) {
-                            int numRead = is.read(buf);
-                            if (numRead <= 0) {
-                                break;
-                            } else {
-                                fos.write(buf, 0, numRead);
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                conn.disconnect();
-                fos.close();
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return file;
     }
 
 }
