@@ -27,7 +27,14 @@ public class SuspendableDownloader {
   //  private  static HashMap<String,Long>  mApkLoadedSizeMap = new HashMap<String, Long>();
 
 
-    public static String downLoadFile(String httpUrl) throws IOException {
+    public interface CallBack{
+        public boolean notfiyProgress(int percent);
+    }
+    private   CallBack mCallBack = null;
+    public  void setCallBack(CallBack callback){
+        this.mCallBack = callback;
+    }
+    public  String downLoadFile(String httpUrl) throws IOException {
         File tmpFile = new File("//sdcard");
         if (!tmpFile.exists()) {
             tmpFile.mkdir();
@@ -54,9 +61,12 @@ public class SuspendableDownloader {
             if (conn.getResponseCode() >= 400) {
                 // Log.i("time","time exceed");
             } else {
+                int downloadsize = 0;
                 while (count <= 100) {
                     if (is != null) {
                         int numRead = is.read(buf);
+                        downloadsize += numRead;
+                        mCallBack.notfiyProgress(downloadsize*100/length);
                         if (numRead <= 0) {
                             break;
                         } else {

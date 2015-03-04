@@ -43,6 +43,7 @@ public class AppDetailInfoActivity extends Activity{
     ProgressDialog dialog = null;
     Button btnInstall = null;
     protected static final int DOWNSUCCESS = 0;// "downlaod_and_install_done";
+    protected static final int DOWNLOADPROGRESS = 1;// "downlaod_and_install_done";
     DownAndInstallThread mDownAndInstallThread = null;
 
     @Override
@@ -72,7 +73,7 @@ public class AppDetailInfoActivity extends Activity{
                     if (mDownAndInstallThread == null) { //第一次下载，或者暂停之后下载
                         mDownAndInstallThread = new DownAndInstallThread(mAppInfo.getApkUrl());
                         mDownAndInstallThread.start();
-                        btnInstall.setText("暂停");
+                        //btnInstall.setText("暂停");
 
                     } else {//不是空，说明是想暂停
                         mDownAndInstallThread.interrupt();
@@ -189,6 +190,9 @@ public class AppDetailInfoActivity extends Activity{
                     Toast.makeText(AppDetailInfoActivity.this, "安装成功", Toast.LENGTH_SHORT)
                             .show();
                     break;
+                case DOWNLOADPROGRESS:
+                    btnInstall.setText(msg.arg1+"");
+                    break;
             }
         }
     };
@@ -208,7 +212,21 @@ public class AppDetailInfoActivity extends Activity{
             //.http://bcs.duapp.com/yzy20120930/luck.apk 解析出luck.apk
             File apkFile = null;
             try {
-                String filePath = SuspendableDownloader.downLoadFile(apkUrl);
+                SuspendableDownloader suspendableDownloader = new SuspendableDownloader();
+
+                suspendableDownloader.setCallBack(new SuspendableDownloader.CallBack() {
+                    @Override
+                    public boolean notfiyProgress(int percent) {
+                        //子线程
+
+                        Message message = new Message();
+                        message.what = DOWNLOADPROGRESS;
+                        message.arg1 = percent;
+                        myHandler.sendMessage(message);
+                        return false;
+                    }
+                });
+                String filePath = suspendableDownloader.downLoadFile(apkUrl);
                 apkFile = new File(filePath);
                 Log.d("yzy","apkFile = "+apkFile);
                 openFile(apkFile);
@@ -220,7 +238,7 @@ public class AppDetailInfoActivity extends Activity{
 
             Message msg = new Message();
             msg.what = DOWNSUCCESS;
-            AppDetailInfoActivity.this.myHandler.sendMessage(msg);
+            myHandler.sendMessage(msg);
 
         }
 
