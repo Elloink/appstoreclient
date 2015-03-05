@@ -34,6 +34,7 @@ public class SuspendableDownloader {
     public interface CallBack{
         public boolean notfiyProgress(int percent);
         public void onDownLoadCancel();
+        public void onDownLoadDone();
     }
     private   CallBack mCallBack = null;
 
@@ -85,6 +86,8 @@ public class SuspendableDownloader {
                 }
                 if (isStopDownload) {
                     mCallBack.onDownLoadCancel();
+                } else {
+                    mCallBack.onDownLoadDone();
                 }
 
             }
@@ -142,6 +145,8 @@ public class SuspendableDownloader {
                 }
                 if (isStopDownload) {
                     mCallBack.onDownLoadCancel();
+                } else {
+                    mCallBack.onDownLoadDone();
                 }
 
             }

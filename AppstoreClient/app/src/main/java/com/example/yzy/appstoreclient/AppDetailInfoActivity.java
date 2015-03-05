@@ -47,6 +47,7 @@ public class AppDetailInfoActivity extends BaseActivity{
     protected static final int DOWNSUCCESS = 0;// "downlaod_and_install_done";
     protected static final int DOWNLOADPROGRESS = 1;// "downlaod_and_install_done";
     protected static final int DOWNLOADCANCEL = 2;
+    protected static final int DOWNLOADDONE = 3;
     DownAndInstallThread mDownAndInstallThread = null;
 
     @Override
@@ -60,6 +61,12 @@ public class AppDetailInfoActivity extends BaseActivity{
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mDownAndInstallThread = null;
+    }
 
     private void initView() {
 
@@ -107,9 +114,20 @@ public class AppDetailInfoActivity extends BaseActivity{
                     builder.setPositiveButton("下载",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    new DownAndInstallThread(mAppInfo.getApkUrl()).start();
-                                    dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
-                                            "正在下载安装文件...", true);
+                                    if (mDownAndInstallThread == null) { //第一次下载，或者暂停之后下载
+                                        mDownAndInstallThread = new DownAndInstallThread(mAppInfo.getApkUrl());
+                                        mDownAndInstallThread.startDownload();
+                                        mDownAndInstallThread.start();
+                                        //btnInstall.setText("暂停");
+
+                                    } else {//不是空，说明是想暂停
+                                        mDownAndInstallThread.interrupt();
+                                        mDownAndInstallThread.stopDownload();
+                                        Log.d("yzy", "mDownAndInstallThread  interrupt..");
+                                        mDownAndInstallThread = null;
+
+                                    }
+
                                 }
                             });
 
@@ -210,6 +228,9 @@ public class AppDetailInfoActivity extends BaseActivity{
                 case DOWNLOADCANCEL:
                     btnInstall.setText("继续");
                     break;
+                case DOWNLOADDONE:
+                    btnInstall.setText("安装");
+                    break;
             }
         }
     };
@@ -244,7 +265,7 @@ public class AppDetailInfoActivity extends BaseActivity{
                     public boolean notfiyProgress(int percent) {
                         //子线程
 
-                        Message message = new Message();
+                        Message message = myHandler.obtainMessage();
                         message.what = DOWNLOADPROGRESS;
                         message.arg1 = percent;
                         myHandler.sendMessage(message);
@@ -253,10 +274,17 @@ public class AppDetailInfoActivity extends BaseActivity{
 
                     @Override
                     public void onDownLoadCancel() {
-                        Message message = new Message();
+                        Message message = myHandler.obtainMessage();
                         message.what = DOWNLOADCANCEL;
                         myHandler.sendMessage(message);
 
+                    }
+
+                    @Override
+                    public void onDownLoadDone() {
+                        Message message = myHandler.obtainMessage();
+                        message.what = DOWNLOADDONE;
+                        myHandler.sendMessage(message);
                     }
                 });
                 String filePath = suspendableDownloader.downLoadFile(apkUrl);
