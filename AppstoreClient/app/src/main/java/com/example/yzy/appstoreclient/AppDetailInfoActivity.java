@@ -72,11 +72,14 @@ public class AppDetailInfoActivity extends Activity{
                 if (info != null && info.getType() == ConnectivityManager.TYPE_WIFI) {
                     if (mDownAndInstallThread == null) { //第一次下载，或者暂停之后下载
                         mDownAndInstallThread = new DownAndInstallThread(mAppInfo.getApkUrl());
+                        mDownAndInstallThread.startDownload();
                         mDownAndInstallThread.start();
                         //btnInstall.setText("暂停");
 
                     } else {//不是空，说明是想暂停
                         mDownAndInstallThread.interrupt();
+                        mDownAndInstallThread.stopDownload();
+                        Log.d("yzy","mDownAndInstallThread  interrupt..");
                         mDownAndInstallThread = null;
                         btnInstall.setText("继续");
                     }
@@ -201,10 +204,18 @@ public class AppDetailInfoActivity extends Activity{
 
 
         String apkUrl;
+        SuspendableDownloader suspendableDownloader = new SuspendableDownloader();
+
         public DownAndInstallThread(String apkUrl) {
               this.apkUrl = apkUrl;
         }
+        public void stopDownload(){
+            suspendableDownloader.stopDownload();
+        }
 
+        public void startDownload(){
+            suspendableDownloader.startDownload();
+        }
         @Override
         public void run() {
 
@@ -212,7 +223,7 @@ public class AppDetailInfoActivity extends Activity{
             //.http://bcs.duapp.com/yzy20120930/luck.apk 解析出luck.apk
             File apkFile = null;
             try {
-                SuspendableDownloader suspendableDownloader = new SuspendableDownloader();
+
 
                 suspendableDownloader.setCallBack(new SuspendableDownloader.CallBack() {
                     @Override
@@ -229,16 +240,20 @@ public class AppDetailInfoActivity extends Activity{
                 String filePath = suspendableDownloader.downLoadFile(apkUrl);
                 apkFile = new File(filePath);
                 Log.d("yzy","apkFile = "+apkFile);
-                openFile(apkFile);
+                if (!suspendableDownloader.isStopDownload) {//说明没有下载完成，用户点击了暂停
+                    openFile(apkFile);
+                    Message msg = new Message();
+                    msg.what = DOWNSUCCESS;
+                    myHandler.sendMessage(msg);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             Log.d("yzy", "download done...");
 
 
-            Message msg = new Message();
-            msg.what = DOWNSUCCESS;
-            myHandler.sendMessage(msg);
+
 
         }
 
