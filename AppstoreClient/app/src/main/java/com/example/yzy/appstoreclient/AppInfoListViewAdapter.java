@@ -115,7 +115,7 @@ class AppInfoListViewAdapter extends BaseAdapter {
          //   handler.post(t);
         }
 
-
+/*
         Button btnDetail = (Button) view.findViewById(R.id.btnDetail);
         btnDetail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +128,7 @@ class AppInfoListViewAdapter extends BaseAdapter {
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
-        });
+        });*/
         return view;
     }
 

@@ -59,6 +59,13 @@ public class AppDetailInfoActivity extends Activity{
     }
 
     private void initView() {
+        getActionBar().setDisplayShowTitleEnabled(true);
+
+        getActionBar().setTitle(mAppInfo.getName());
+
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
         tvAppName = (TextView) findViewById(R.id.name);
         tvAppName.setText(mAppInfo.getName());
 
