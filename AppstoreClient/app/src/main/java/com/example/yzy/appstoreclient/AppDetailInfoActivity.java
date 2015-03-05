@@ -41,6 +41,8 @@ public class AppDetailInfoActivity extends BaseActivity{
     TextView tvAppCategory = null;
     ImageView iconImage = null;
     ImageView photoImage = null;
+    ImageView photoImage2 = null;
+    ImageView photoImage3 = null;
     AppInfo mAppInfo;
     ProgressDialog dialog = null;
     Button btnInstall = null;
@@ -76,8 +78,8 @@ public class AppDetailInfoActivity extends BaseActivity{
         tvAppName = (TextView) findViewById(R.id.name);
         tvAppName.setText(mAppInfo.getName());
 
-        tvAppCategory = (TextView) findViewById(R.id.category);
-        tvAppCategory.setText(mAppInfo.getCategoryName());
+    //    tvAppCategory = (TextView) findViewById(R.id.category);
+    //    tvAppCategory.setText(mAppInfo.getCategoryName());
 
 
 
@@ -184,6 +186,8 @@ public class AppDetailInfoActivity extends BaseActivity{
 
 
         photoImage = (ImageView) findViewById(R.id.appphoto);
+        photoImage2 = (ImageView) findViewById(R.id.appphoto2);
+        photoImage3 = (ImageView) findViewById(R.id.appphoto3);
         Thread t2 = new Thread(){
             @Override
             public void run() {
@@ -195,6 +199,9 @@ public class AppDetailInfoActivity extends BaseActivity{
                         @Override
                         public void run() {
                             photoImage.setImageBitmap(bitmap);
+                            photoImage2.setImageBitmap(bitmap);
+                            photoImage3.setImageBitmap(bitmap);
+
 
                         }
                     });
