@@ -16,7 +16,7 @@ import java.util.ArrayList;
 /**
  * Created by yangzhongyu on 15-2-25.
  */
-public class CategoryActivity  extends Activity {
+public class CategoryActivity  extends BaseActivity {
     ListView mListView = null;
     ArrayList<CategoryInfo> mAllCategory = new ArrayList<CategoryInfo>();
     EditText mEtSearchText = null;

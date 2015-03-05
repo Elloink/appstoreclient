@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,10 +34,11 @@ import java.net.URL;
 /**
  * Created by yzy on 15-2-17.
  */
-public class AppDetailInfoActivity extends Activity{
+public class AppDetailInfoActivity extends BaseActivity{
     private static final String TAG = "AppDetailInfoActivity";
     TextView tvAppName = null;
     TextView tvAppSummary = null;
+    TextView tvAppCategory = null;
     ImageView iconImage = null;
     ImageView photoImage = null;
     AppInfo mAppInfo;
@@ -58,16 +60,17 @@ public class AppDetailInfoActivity extends Activity{
 
     }
 
+
     private void initView() {
-        getActionBar().setDisplayShowTitleEnabled(true);
 
         getActionBar().setTitle(mAppInfo.getName());
 
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
         tvAppName = (TextView) findViewById(R.id.name);
         tvAppName.setText(mAppInfo.getName());
+
+        tvAppCategory = (TextView) findViewById(R.id.category);
+        tvAppCategory.setText(mAppInfo.getCategoryName());
 
 
 

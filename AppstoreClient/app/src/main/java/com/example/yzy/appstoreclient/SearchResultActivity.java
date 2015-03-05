@@ -1,11 +1,14 @@
 package com.example.yzy.appstoreclient;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 
 import java.util.ArrayList;
 
-public class SearchResultActivity extends Activity {
+public class SearchResultActivity extends BaseActivity {
 
     private static final String TAG = "SearchResultActivity";
     private ArrayList<AppInfo> mAllApps = new ArrayList<AppInfo>();
@@ -33,6 +36,19 @@ public class SearchResultActivity extends Activity {
                     return false;
            //     }
 
+            }
+        });
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AppInfo app = mAllApps.get(i);
+                Intent intent = new Intent(SearchResultActivity.this,AppDetailInfoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("appinfo", app);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
 

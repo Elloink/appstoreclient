@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-public class AppInfoListActivity extends Activity {
+public class AppInfoListActivity extends BaseActivity {
 
     private static final String TAG = "AppInfoListActivity";
     private ArrayList<AppInfo> mAllApps = new ArrayList<AppInfo>();
