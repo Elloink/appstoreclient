@@ -44,6 +44,7 @@ public class AppDetailInfoActivity extends Activity{
     Button btnInstall = null;
     protected static final int DOWNSUCCESS = 0;// "downlaod_and_install_done";
     protected static final int DOWNLOADPROGRESS = 1;// "downlaod_and_install_done";
+    protected static final int DOWNLOADCANCEL = 2;
     DownAndInstallThread mDownAndInstallThread = null;
 
     @Override
@@ -79,9 +80,9 @@ public class AppDetailInfoActivity extends Activity{
                     } else {//不是空，说明是想暂停
                         mDownAndInstallThread.interrupt();
                         mDownAndInstallThread.stopDownload();
-                        Log.d("yzy","mDownAndInstallThread  interrupt..");
+                        Log.d("yzy", "mDownAndInstallThread  interrupt..");
                         mDownAndInstallThread = null;
-                        btnInstall.setText("继续");
+
                     }
 
                     //dialog = ProgressDialog.show(AppDetailInfoActivity.this, "",
@@ -194,7 +195,10 @@ public class AppDetailInfoActivity extends Activity{
                             .show();
                     break;
                 case DOWNLOADPROGRESS:
-                    btnInstall.setText(msg.arg1+"");
+                    btnInstall.setText("暂停"+ " 已下载"+msg.arg1+"%");
+                    break;
+                case DOWNLOADCANCEL:
+                    btnInstall.setText("继续");
                     break;
             }
         }
@@ -235,6 +239,14 @@ public class AppDetailInfoActivity extends Activity{
                         message.arg1 = percent;
                         myHandler.sendMessage(message);
                         return false;
+                    }
+
+                    @Override
+                    public void onDownLoadCancel() {
+                        Message message = new Message();
+                        message.what = DOWNLOADCANCEL;
+                        myHandler.sendMessage(message);
+
                     }
                 });
                 String filePath = suspendableDownloader.downLoadFile(apkUrl);
