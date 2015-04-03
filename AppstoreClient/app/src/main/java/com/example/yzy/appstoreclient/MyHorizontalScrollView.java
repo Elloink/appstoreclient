@@ -2,6 +2,8 @@ package com.example.yzy.appstoreclient;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +22,94 @@ public class MyHorizontalScrollView extends ViewGroup {
     private Scroller mScroller = null;
     //private OverScroller mScroller;
     public MyHorizontalScrollView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public MyHorizontalScrollView(Context context, AttributeSet attrs) {
-
-        super(context, attrs);
-        mScroller = new Scroller(context);
+        this(context, attrs, 0);
     }
 
     public MyHorizontalScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mScroller = new Scroller(context);
+
+    }
+
+    @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+        return super.onInterceptHoverEvent(event);
+    }
+
+
+    @Override
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            Log.d("yzy","computeScroll="+mScroller.getCurrX());
+            scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+            postInvalidate();
+        }
+    }
+
+    public void startMove(int startX,int dx){
+        //使用动画控制偏移过程 , 3s内到位
+        mScroller.startScroll(startX, 0, dx , 0,1000);
+        //其实点击按钮的时候，系统会自动重新绘制View，我们还是手动加上吧。
+        invalidate();
+        //使用scrollTo一步到位
+        //scrollTo(curScreen * MultiScreenActivity.screenWidth, 0);
+    }
+
+    int mLastionMotionX = 0;
+    int mDownMotionX = 0;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int eventX = (int) event.getX();
+        int eventY = (int) event.getY();
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+            case MotionEvent.ACTION_DOWN:
+                mDownMotionX = eventX;
+                mLastionMotionX = eventX;
+                break;
+            case MotionEvent.ACTION_MOVE: {
+                int detaX = (int)(mLastionMotionX - eventX ); //每次滑动屏幕，屏幕应该移动的距离
+
+            //    if (Math.abs(detaX) > 20) {
+                    scrollBy(detaX, 0);//开始缓慢滑屏咯。 detaX > 0 向右滑动 ， detaX < 0 向左滑动 ，
+                    Log.d("yzy","ACTION_MOVE="+detaX);
+            //    }
+
+
+
+                mLastionMotionX = eventX ;
+
+                //mChild.layout(eventX, eventY, eventX + mChild.getWidth(), eventY + mChild.getHeight());
+
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                int childWidth = getChildAt(0).getWidth();
+                Log.d("yzy","mDownMotionX="+mDownMotionX+" eventX="+eventX+" childWith="+childWidth);
+                int moveDx = Math.abs((int)(eventX - mDownMotionX));
+                if (moveDx > 20) {
+                    if (getChildAt(0).getX() > 0  || getChildAt(getChildCount()-1).getX() < childWidth) {
+                        startMove(eventX, (eventX - mDownMotionX) > 0 ? -moveDx : moveDx);
+                    }
+                    startMove(eventX, (eventX - mDownMotionX) > 0 ? moveDx - childWidth :  childWidth - moveDx);//是相反方向！！！
+                    invalidate();
+                }
+
+            }
+        }
+        return true;
+      //  return super.onTouchEvent(event);
+    }
+
+
+
+    @Override
+    protected LayoutParams generateLayoutParams(LayoutParams p) {
+        return super.generateLayoutParams(p);
     }
 
     /**
@@ -38,12 +117,13 @@ public class MyHorizontalScrollView extends ViewGroup {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      //  super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int measureWidth = measureWidth(widthMeasureSpec);
         int measureHeight = measureHeight(heightMeasureSpec);
         // 计算自定义的ViewGroup中所有子控件的大小
-        measureChildren(widthMeasureSpec, heightMeasureSpec);
+        measureChildren(widthMeasureSpec, heightMeasureSpec);//很重要
         // 设置自定义的控件MyViewGroup的大小
+        Log.d("yzy","measureWidth="+measureWidth+" measureHeight="+measureHeight);
         setMeasuredDimension(measureWidth, measureHeight);
     }
 
@@ -86,8 +166,16 @@ public class MyHorizontalScrollView extends ViewGroup {
         int heightMode = MeasureSpec.getMode(pHeightMeasureSpec);
         int heightSize = MeasureSpec.getSize(pHeightMeasureSpec);
 
+        Log.d("yzy","heightMode="+heightMode+" heightSize="+heightSize+" MeasureSpec.AT_MOST="+MeasureSpec.AT_MOST);
         switch (heightMode) {
             case MeasureSpec.AT_MOST:
+            case MeasureSpec.UNSPECIFIED:
+                int maxHeight = 0;
+                for(int i = 0;i<getChildCount();i++){
+                    maxHeight = getChildAt(i).getHeight() > maxHeight ? getChildAt(i).getHeight() : maxHeight;
+                }
+                result = maxHeight;
+                break;
             case MeasureSpec.EXACTLY:
                 result = heightSize;
                 break;
@@ -95,14 +183,12 @@ public class MyHorizontalScrollView extends ViewGroup {
         return result;
     }
 
-    /**
-     * 覆写onLayout，其目的是为了指定视图的显示位置，方法执行的前后顺序是在onMeasure之后，因为视图肯定是只有知道大小的情况下，
-     * 才能确定怎么摆放
-     */
+
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // 记录总高度
-        int mTotalHeight = 0;
+    protected void onLayout(boolean change, int left, int top, int right, int bottom) {
+
+// 记录总高度
+        int mTotalWidth = 0;
         // 遍历所有子视图
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -112,12 +198,11 @@ public class MyHorizontalScrollView extends ViewGroup {
             int measureHeight = childView.getMeasuredHeight();
             int measuredWidth = childView.getMeasuredWidth();
 
-            childView.layout(l, mTotalHeight, measuredWidth, mTotalHeight
-                    + measureHeight);
+            childView.layout(mTotalWidth, 0,mTotalWidth+measuredWidth, measureHeight);
 
-            mTotalHeight += measureHeight;
+            mTotalWidth += measuredWidth;
 
         }
-    }
 
+    }
 }

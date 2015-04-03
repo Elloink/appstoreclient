@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class SuspendableDownloader {
 
-    private  static  final String SDPATH = "//sdcard//";
+    private  static  final String SDPATH = "//sdcard//rupeng_market";
     private  static  final String TAG  = "SuspendableDownloader";
     public boolean isStopDownload = false;
 
@@ -43,121 +43,75 @@ public class SuspendableDownloader {
 
     }
 
-
-    public  String downLoadFile(String httpUrl) throws IOException {
+    public String downLoadFile(String httpUrl) throws IOException{
         File tmpFile = new File(SDPATH);
         if (!tmpFile.exists()) {
             tmpFile.mkdir();
         }
+        //解析出要下载的文件名称
         String fileName = httpUrl.split("/")[httpUrl.split("/").length-1];
 
         final RandomAccessFile file = new RandomAccessFile(SDPATH + fileName,"rwd");
 
-        //第一次下载
-        if (file.length() == 0) {
+        //已经下载的文件大小
+        long  alreadyLoadFileLength = file.length();
 
-            URL url = new URL(httpUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            int  length = conn.getContentLength();
+        URL url = new URL(httpUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        long  completeFilelength = conn.getContentLength();
 
-            InputStream is = conn.getInputStream();
-            //FileOutputStream fos = new FileOutputStream(file);
-            byte[] buf = new byte[256*2];
-            conn.connect();
-            double count = 0;
-            if (conn.getResponseCode() >= 400) {
-                 Log.i(TAG,"time exceed");
-            } else {
-                while (count <= 100 && !isStopDownload) {
-                    if (is != null) {
-                        int numRead = is.read(buf);
+        HttpURLConnection conn2 = (HttpURLConnection) url.openConnection();
 
+        conn2.setRequestProperty("Range", "bytes="+alreadyLoadFileLength+"-"+(completeFilelength-1)); //如果文件已经下载完成，即从 1234-1234 会报告FileNotFound Exception
 
-                        if (numRead <= 0) {
-                            break;
-                        } else {
-                            file.write(buf, 0, numRead);
-                            mCallBack.notfiyProgress((int)(file.length()*100/length));
-                            Log.d(TAG,"notifyprogress="+(int)(file.length()*100/length));
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                if (isStopDownload) {
-                    mCallBack.onDownLoadCancel();
-                } else {
-                    mCallBack.onDownLoadDone();
-                }
+        //java.lang.IllegalStateException: Cannot set request property after connection is made
 
-            }
-            conn.disconnect();
-            file.close();
-            is.close();
-        }else {
-            //不是第一次下载，之前有过下载
-            Log.d(TAG,"continue file.length() ="+file.length()  );
-        //    file.seek(file.length());
+        //  int length = conn.getContentLength();http://www.eoeandroid.com/thread-154241-1-1.html
 
-            URL url = new URL(httpUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            int length = conn.getContentLength();
-
-
-            HttpURLConnection conn2 = (HttpURLConnection) url.openConnection();
-
-            conn2.setRequestProperty("Range", "bytes="+file.length()+"-"+(length-1)); //如果文件已经下载完成，即从 1234-1234 会报告FileNotFound Exception
-
-            //java.lang.IllegalStateException: Cannot set request property after connection is made
-
-          //  int length = conn.getContentLength();http://www.eoeandroid.com/thread-154241-1-1.html
-
-            if (file.length() == length) {
-                 return SDPATH + fileName;
-            }
-
-            // file.setLength(length);
-
-            InputStream is = conn.getInputStream();
-            //FileOutputStream fos = new FileOutputStream(file);
-            byte[] buf = new byte[256*2];
-            conn.connect();
-            double count = 0;
-
-            if (conn.getResponseCode() >= 400) {
-                 Log.i(TAG,"time exceed");
-            } else {
-                while (count <= 100 && !isStopDownload) {
-                    if (is != null) {
-                        int numRead = is.read(buf);
-                        if (numRead <= 0) {
-
-                            break;
-                        } else {
-                            file.write(buf, 0, numRead);
-                            mCallBack.notfiyProgress((int)(file.length()*100/length));
-                            Log.d(TAG,"notifyprogress="+(int)(file.length()*100/length));
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                if (isStopDownload) {
-                    mCallBack.onDownLoadCancel();
-                } else {
-                    mCallBack.onDownLoadDone();
-                }
-
-            }
-            conn.disconnect();
-            file.close();
-            is.close();
-
-
+        if (alreadyLoadFileLength == completeFilelength) {
+            return SDPATH + fileName;
         }
 
+        // file.setLength(length);
+
+        InputStream is = conn.getInputStream();
+        //FileOutputStream fos = new FileOutputStream(file);
+        byte[] buf = new byte[256*2];
+        conn.connect();
+
+        if (conn.getResponseCode() >= 400) {
+            Log.i(TAG,"time exceed");
+        } else {
+            while (!isStopDownload) {
+                if (is != null) {
+                    int numRead = is.read(buf);
+                    if (numRead <= 0) {
+
+                        break;
+                    } else {
+                        file.write(buf, 0, numRead);
+                        mCallBack.notfiyProgress((int)(file.length()*100/completeFilelength));
+                        Log.d(TAG,"notifyprogress="+(int)(file.length()*100/completeFilelength));
+                    }
+                } else {
+                    break;
+                }
+            }
+            if (isStopDownload) {
+                mCallBack.onDownLoadCancel();
+            } else {
+                mCallBack.onDownLoadDone();
+            }
+
+        }
+        conn.disconnect();
+        file.close();
+        is.close();
+
+
         return SDPATH + fileName;
+
     }
+
 
 }
