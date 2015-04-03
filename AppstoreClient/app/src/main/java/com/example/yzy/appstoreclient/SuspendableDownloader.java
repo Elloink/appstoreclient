@@ -74,12 +74,12 @@ public class SuspendableDownloader {
 
         // file.setLength(length);
 
-        InputStream is = conn.getInputStream();
+        InputStream is = conn2.getInputStream();
         //FileOutputStream fos = new FileOutputStream(file);
         byte[] buf = new byte[256*2];
-        conn.connect();
+        conn2.connect();
 
-        if (conn.getResponseCode() >= 400) {
+        if (conn2.getResponseCode() >= 400) {
             Log.i(TAG,"time exceed");
         } else {
             while (!isStopDownload) {
@@ -104,7 +104,7 @@ public class SuspendableDownloader {
             }
 
         }
-        conn.disconnect();
+        conn2.disconnect();
         file.close();
         is.close();
 
